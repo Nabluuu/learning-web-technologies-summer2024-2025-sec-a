@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+   
+    <title>Date of Birth</title>
+</head>
+<body>
+     <h2>Date of Birth </h2>
+     <form onsubmit="return validationDOB()">
+         <label for="dob">Date of Birth:</label>
+         <input type="date" id="dob" />
+
+         <p id="doberror" style="color:red;"></p>
+
+         <input type="submit" value="Submit"/>
+        </form>
+        <script>
+            function validationDOB() {
+                let dob = document.getElementById("dob").value;
+                let error = document.getElementById("doberror");
+                
+                if (dob === ""){
+                    error.innerHTML = "date of birth cannot be empty";
+                    return false;
+                }
+                error.innerHTML = "";
+                return true;            
+            }
+        </script>
+</body>
+</html>
