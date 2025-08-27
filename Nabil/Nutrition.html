@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nutrition Logger</title>
+  <style>
+    body { 
+        font-family: Arial, sans-serif; 
+        margin: 0; 
+        padding: 0; 
+        background: #f5f5f5; 
+    }
+    header { 
+        background: #4CAF50; 
+        color: white; 
+        padding:2rem; 
+        text-align: center; 
+    }
+    nav { 
+        display: flex; 
+        justify-content: center; 
+        background: #333; 
+    }
+    nav button { 
+        flex: 1; 
+        padding: 1rem; 
+        border: none; 
+        background: #333; 
+        color: white; 
+        cursor: pointer; 
+    }
+    nav button:hover { 
+        background: #555; 
+    }
+    .navbar {
+    display: flex;
+    gap: 25px;
+    padding: 15px 80px;
+    background: rgba(0, 0, 0, 1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+    }
+    .navbar a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+    }
+    .navbar a:hover {
+    color: #a3d8ff;
+    }
+    .screen { 
+        display: none; 
+        padding: 1rem; 
+    }
+
+    .active { 
+        display: block; 
+    }
+    .meal-list { 
+        margin-top: 1rem; 
+    }
+    .meal-item { 
+        background: white; 
+        margin: 5px 0; 
+        padding: 10px; 
+        border-radius: 5px; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+    }
+    .delete-btn { 
+        background: red; 
+        color: white; 
+        border: none;
+        padding: 5px 10px; 
+        border-radius: 5px; 
+        cursor: pointer;
+    }
+    canvas { 
+        margin-top: 20px; 
+        background: white; 
+        padding: 10px; 
+        border-radius: 10px; 
+    }
+    input, button { 
+        margin: 5px 5px 5px 0; 
+        padding: 8px; 
+    }
+    .legend { margin-top: 10px; }
+    .legend span { 
+        display: inline-block; 
+        margin-right: 15px; 
+        cursor: pointer; 
+    }
+    .color-box { 
+        display: inline-block; 
+        width: 15px; 
+        height: 15px; 
+        margin-right: 5px; 
+        vertical-align: middle; 
+    }
+    .error-msg { color: red; 
+        font-size: 0.9em; 
+        margin-top: 2px; 
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Nutrition Logger</h1>
+  </header>
+
+  <nav>
+    <button onclick="showScreen('diary')">Food Diary</button>
+    <button onclick="showScreen('scanner')">Barcode Scanner</button>
+    <button onclick="showScreen('dashboard')">Macro Dashboard</button>
+  </nav>
+
+  <div id="diary" class="screen active">
+    <h2>Food Diary</h2>
+    <div>
+      <input type="text" id="foodName" placeholder="Food Name">
+      <div id="foodNameError" class="error-msg"></div>
+    </div>
+    <div>
+      <input type="number" id="carbs" placeholder="Carbs (g)">
+      <div id="carbsError" class="error-msg"></div>
+    </div>
+    
+    <div>
+      <input type="number" id="protein" placeholder="Protein (g)">
+      <div id="proteinError" class="error-msg"></div>
+    </div>
+   
+    <div>
+      <input type="number" id="fat" placeholder="Fat (g)">
+      <div id="fatError" class="error-msg"></div>
+   
+    </div>
+    <button onclick="addMeal()">Add Meal</button>
+    <button onclick="quickAdd('Chicken Salad', 10, 30, 15)">Quick Add: Chicken Salad</button>
+    <button onclick="quickAdd('Oatmeal', 40, 5, 8)">Quick Add: Oatmeal</button>
+    
+    <div class="meal-list" id="mealList"></div>
+  </div>
+
+  
+  
+  <div id="scanner" class="screen">
+    <h2>Barcode Scanner</h2>
+    <input type="text" id="barcodeInput" placeholder="Enter barcode">
+    <button onclick="scanBarcode()">Scan</button>
+    <div id="scanResult"></div>
+  </div>
+
+ 
+
+  <div id="dashboard" class="screen">
+    
+    <h2>Macro Dashboard</h2>
+
+    <canvas id="macroChart" width="300" height="300"></canvas>
+    
+    <div class="legend">
+      <span onclick="toggleMacro('C')"><span class="color-box" style="background:#4CAF50"></span>Carbs: <span id="carbVal">0</span>g</span>
+      <span onclick="toggleMacro('P')"><span class="color-box" style="background:#2196F3"></span>Protein: <span id="proteinVal">0</span>g</span>
+      <span onclick="toggleMacro('F')"><span class="color-box" style="background:#FF9800"></span>Fat: <span id="fatVal">0</span>g</span>
+    </div>
+
+  </div>
+
+  <div class="navbar">
+    <a href ="Nutrition.html">Nutrition Logger</a>
+    <a href="WaterIntake.html">Water Intake</a>
+    <a href="Workoutplan.html">Workout Plan</a>
+  </div>
+
+  <script>
+    
+    function showScreen(id) {
+      document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+      document.getElementById(id).classList.add('active');
+      if(id === 'dashboard') drawChart();
+    }
+
+    let macros = { P: 0, C: 0, F: 0 };
+    let visible = { P: true, C: true, F: true };
+
+    const mealList = document.getElementById('mealList');
+
+    function createMealItem(name, c, p, f) {
+      const div = document.createElement('div');
+      div.className = 'meal-item';
+      const span = document.createElement('span');
+      span.textContent = `${name} (C:${c} / P:${p} / F:${f})`;
+
+      macros.C += c; macros.P += p; macros.F += f;
+
+      const btn = document.createElement('button');
+      btn.textContent = 'Delete';
+      btn.className = 'delete-btn';
+      btn.onclick = () => {
+        macros.C -= c; macros.P -= p; macros.F -= f;
+        div.remove();
+        drawChart();
+      };
+
+      div.appendChild(span);
+      div.appendChild(btn);
+      drawChart();
+      return div;
+    }
+
+    function validateInput(name, c, p, f){
+      let valid = true;
+      document.getElementById('foodNameError').textContent = '';
+      document.getElementById('carbsError').textContent = '';
+      document.getElementById('proteinError').textContent = '';
+      document.getElementById('fatError').textContent = '';
+
+      if(!name.trim()){ document.getElementById('foodNameError').textContent = 'Food name required'; valid=false; }
+      if(isNaN(c)){ document.getElementById('carbsError').textContent = 'Carbs required'; valid=false; }
+      if(isNaN(p)){ document.getElementById('proteinError').textContent = 'Protein required'; valid=false; }
+      if(isNaN(f)){ document.getElementById('fatError').textContent = 'Fat required'; valid=false; }
+      
+
+      const total = (isNaN(c)?0:c) + (isNaN(p)?0:p) + (isNaN(f)?0:f);
+      if(total>100){
+        document.getElementById('carbsError').textContent = 'Total macros cannot exceed 100g';
+        valid=false;
+      }
+      return valid;
+    }
+
+    function addMeal() {
+      const name = document.getElementById('foodName').value;
+      const c = parseInt(document.getElementById('carbs').value);
+      const p = parseInt(document.getElementById('protein').value);
+      const f = parseInt(document.getElementById('fat').value);
+
+      if(validateInput(name,c,p,f)){
+        mealList.appendChild(createMealItem(name, c, p, f));
+        document.getElementById('foodName').value = '';
+        document.getElementById('carbs').value = '';
+        document.getElementById('protein').value = '';
+        document.getElementById('fat').value = '';
+      }
+    }
+
+    function quickAdd(name, c, p, f) {
+      if(c+p+f<=100) mealList.appendChild(createMealItem(name, c, p, f));
+    }
+
+    const foodDB = {
+      '12345': { name: 'Protein Bar', C: 25, P: 20, F: 7 },
+      '67890': { name: 'Greek Yogurt', C: 10, P: 15, F: 0 }
+    };
+
+    function scanBarcode() {
+      const code = document.getElementById('barcodeInput').value;
+      const result = foodDB[code];
+      if(result){
+        if(result.C+result.P+result.F<=100) mealList.appendChild(createMealItem(result.name, result.C, result.P, result.F));
+        document.getElementById('scanResult').textContent = `${result.name} (C:${result.C}/P:${result.P}/F:${result.F})`;
+      } else {
+        document.getElementById('scanResult').textContent = 'Food not found';
+      }
+    }
+
+    function toggleMacro(type){
+      visible[type] = !visible[type];
+      drawChart();
+    }
+
+    function drawChart() {
+      const canvas = document.getElementById('macroChart');
+      const chatrt = canvas.getContext('2d');
+      chatrt.clearRect(0,0,canvas.width,canvas.height);
+
+      document.getElementById('carbVal').textContent = macros.C;
+      document.getElementById('proteinVal').textContent = macros.P;
+      document.getElementById('fatVal').textContent = macros.F;
+
+      const data = [];
+      const colors = [];
+      if(visible.C) { data.push(macros.C); colors.push('#4CAF50'); }
+      if(visible.P) { data.push(macros.P); colors.push('#2196F3'); }
+      if(visible.F) { data.push(macros.F); colors.push('#FF9800'); }
+
+      const total = data.reduce((a,b) => a+b,0) || 1;
+      let startAngle = 0;
+      for(let i=0;i<data.length;i++){
+        let sliceAngle = 2 * Math.PI * data[i]/total;
+        chatrt.beginPath();
+        chatrt.moveTo(150,150);
+        chatrt.arc(150,150,120,startAngle,startAngle+sliceAngle);
+        chatrt.closePath();
+        chatrt.fillStyle = colors[i];
+        chatrt.fill();
+        startAngle += sliceAngle;
+      }
+    }
+
+    drawChart();
+  </script>
+</body>
+</html>

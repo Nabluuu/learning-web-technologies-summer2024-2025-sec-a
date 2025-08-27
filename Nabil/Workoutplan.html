@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Workout Plans</title>
+<style>
+  body { 
+    font-family: Arial, sans-serif; 
+    margin:0; 
+    padding:0; 
+    background: #f5f5f5; 
+    }
+  header { 
+    background: #2c3e50; 
+    color:white; 
+    padding:2rem; 
+    text-align:center; 
+    }
+  nav { 
+    display:flex; 
+    background: #34495e; 
+    }
+  nav button { 
+    flex:1; 
+    padding:1rem; 
+    color:white; 
+    background:#34495e; 
+    border:none; 
+    cursor:pointer; 
+    }
+  nav button:hover { 
+    background:#2c3e50; 
+    }
+    .navbar {
+        display: flex;
+        gap: 25px;
+        padding: 15px 80px;
+        background: rgba(30, 30, 60, 0.85);
+        position: fixed;
+        top: 0;
+        width: 100%;
+        z-index: 10;
+        backdrop-filter: blur(4px);
+    }
+    .navbar a {
+        color: #e0e0e0;
+        text-decoration: none;
+        font-weight: bold;
+        transition: 0.3s;
+    }
+    .navbar a:hover {
+        color: #a3d8ff;
+    }
+  .screen { 
+    display:none; 
+    padding:1rem; 
+    }
+  .active { 
+    display:block; 
+    }
+  .program { 
+    background:white; 
+    padding:10px; 
+    margin:5px 0; 
+    border-radius:5px; 
+    cursor:pointer; 
+    }
+  .schedule-item { 
+    background:white; 
+    padding:10px; 
+    margin:5px 0; 
+    border-radius:5px; 
+    cursor:grab; 
+    }
+  .notification { 
+    background:#27ae60; 
+    color:white; 
+    padding:10px; 
+    margin:5px 0; 
+    border-radius:5px; 
+    display:none; 
+    }
+
+</style>
+</head>
+<body>
+<header>
+  <h1>Workout Plans</h1>
+</header>
+
+<nav>
+  <button onclick="showScreen('catalog')">Program Catalog</button>
+  <button onclick="showScreen('daily')">Daily Workout</button>
+  <button onclick="showScreen('schedule')">Schedule Editor</button>
+</nav>
+
+<div id="catalog" class="screen active">
+  <h2>Program Catalog</h2>
+  <div class="program" onclick="chooseProgram('4-week Beginner')">4-week Beginner Program</div>
+  <div class="program" onclick="chooseProgram('8-week Intermediate')">8-week Intermediate Program</div>
+  <div class="program" onclick="chooseProgram('12-week Advanced')">12-week Advanced Program</div>
+</div>
+
+<div id="daily" class="screen">
+  <h2>Daily Workout</h2>
+  <div id="dailyWorkout">Select a program to see today's workout</div>
+  <div id="notification" class="notification">Time for your workout!</div>
+</div>
+
+<div id="schedule" class="screen">
+  <h2>Schedule Editor</h2>
+  <div id="scheduleList">
+    <div class="schedule-item" draggable="true">Monday: Chest</div>
+    <div class="schedule-item" draggable="true">Tuesday: Back</div>
+    <div class="schedule-item" draggable="true">Wednesday: Legs</div>
+    <div class="schedule-item" draggable="true">Thursday: Arms</div>
+    <div class="schedule-item" draggable="true">Friday: Cardio</div>
+  </div>
+</div>
+
+<div class="navbar">
+    <a href ="Nutrition.html">Nutrition Logger</a>
+    <a href="WaterIntake.html">Water Intake</a>
+    <a href="Workoutplan.html">Workout Plan</a>
+</div>
+
+<script>
+  let selectedProgram = '';
+  function showScreen(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+  }
+
+  function chooseProgram(program){
+    selectedProgram = program;
+    document.getElementById('dailyWorkout').textContent = `Today's workout for ${program}`;
+    showNotification();
+  }
+
+  function showNotification(){
+    const notif = document.getElementById('notification');
+    notif.style.display = 'block';
+    setTimeout(()=>{ notif.style.display = 'none'; }, 3000);
+  }
+
+
+  const scheduleItems = document.querySelectorAll('.schedule-item');
+  let dragged;
+
+  scheduleItems.forEach(item => {
+    item.addEventListener('dragstart', e => { dragged = e.target; });
+    item.addEventListener('dragover', e => e.preventDefault());
+    item.addEventListener('drop', e => {
+      e.preventDefault();
+      
+      if(dragged!==e.target){
+        const parent = e.target.parentNode;
+        let nodes = Array.from(parent.children);
+        let draggedIndex = nodes.indexOf(dragged);
+        let targetIndex = nodes.indexOf(e.target);
+        
+        if(draggedIndex<targetIndex){
+          parent.insertBefore(dragged, e.target.nextSibling);
+        } else {
+          parent.insertBefore(dragged, e.target);
+        }
+      }
+    });
+  });
+</script>
+</body>
+</html>
