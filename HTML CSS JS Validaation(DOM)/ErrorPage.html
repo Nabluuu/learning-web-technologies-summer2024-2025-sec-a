@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Page</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f2f2f2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+  .error-container {
+    text-align: center;
+    background: white;
+    padding: 50px;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  }
+  h1 {
+    font-size: 100px;
+    color: #e74c3c;
+    margin: 0;
+  }
+  p {
+    font-size: 20px;
+    margin: 10px 0 20px 0;
+  }
+  a {
+    display: inline-block;
+    padding: 10px 20px;
+    background: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  a:hover { background: #2980b9; }
+</style>
+</head>
+<body>
+
+<div class="error-container" id="error404">
+  <h1>404</h1>
+  <p>Oops! Page not found.</p>
+  <a href="/">Go Home</a>
+</div>
+
+
+<div class="error-container" id="error500" style="display:none;">
+  <h1>500</h1>
+  <p>Internal Server Error.</p>
+  <a href="/">Go Home</a>
+</div>
+
+
+<script>
+   document.getElementById('error404').style.display = 'none';
+   document.getElementById('error500').style.display = 'block';
+</script>
+
+</body>
+</html>

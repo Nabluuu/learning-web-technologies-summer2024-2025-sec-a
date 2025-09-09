@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Intake Tracker</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #e0f7fa;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 50px;
+    margin: 0;
+  }
+
+  .navbar {
+  display: flex;
+  gap: 25px;
+  padding: 15px 80px;
+  background: rgba(139, 176, 179, 0.85);
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 10;
+  backdrop-filter: blur(4px);
+}
+ 
+.navbar a {
+  color: #00796b;
+  text-decoration: none;
+  font-weight: bold;
+  transition: 0.3s;
+}
+ 
+.navbar a:hover {
+  color: #a3d8ff;
+}
+ 
+.container {
+    width: 400px;
+    background: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 2px 2px 12px rgba(0,0,0,0.1);
+}
+ 
+  h2, h3 {
+    text-align: center;
+    color: #00796b;
+  }
+ 
+  .tracker, .goal, .reminder {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+ 
+  button {
+    padding: 12px 20px;
+    font-size: 16px;
+    background: #00796b;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    margin: 5px;
+  }
+ 
+  input[type="number"] {
+    width: 80px;
+    padding: 8px;
+    font-size: 16px;
+    margin-left: 10px;
+  }
+ 
+  .history p {
+    margin: 5px 0;
+  }
+</style>
+</head>
+<body>
+ 
+<div class="container">
+  <h2>Water Intake Tracker</h2>
+
+  <div class="tracker">
+    <p>Glasses Today: <span id="count">0</span>/<span id="goalDisplay">0</span></p>
+    <button onclick="addGlass()">+1 Glass</button>
+  </div>
+
+  <div class="goal">
+    <label>Daily Goal: </label>
+    <input type="number" id="goal" value="0" min="1">
+    <button onclick="setGoal()">Set Goal</button>
+  </div>
+
+  <div class="reminder">
+    <h3>Reminder</h3>
+    <label>Remind every (minutes): </label>
+    <input type="number" id="reminderInterval" value="60" min="1">
+    <button onclick="startReminder()">Start Reminder</button>
+    <button onclick="stopReminder()">Stop Reminder</button>
+  </div>
+
+  <div class="history">
+    <h3>History</h3>
+    <div id="historyList"></div>
+  </div>
+
+  <div class="end-session">
+    <button onclick="endSession()">End Day Session</button>
+  </div>
+</div>
+
+<div class="navbar">
+    <a href ="land.html">Nutrition Logger</a>
+    <a href="l.html">Water Intake</a>
+    <a href="authentication.html">Workout Plan</a>
+  </div>
+
+<script>
+let count = 0;
+let goal = 0;
+let history = [];
+let reminderTimer = null;
+
+function addGlass() {
+  if(goal < 1) {
+    alert("Set a daily goal first!");
+    return;
+  }
+
+  count++;
+  document.getElementById("count").textContent = count;
+
+  if(count === goal){
+    alert("Congratulations! Goal reached!");
+  } else if(count < goal && count % 2 === 0) {
+    alert("Keep going! You're behind your goal.");
+  }
+
+  let today = new Date().toLocaleDateString();
+  history.push({ date: today, glasses: count });
+  updateHistory();
+}
+
+function setGoal() {
+  let newGoal = Number(document.getElementById("goal").value);
+  if(newGoal < 1) {
+    alert("Goal must be at least 1");
+    return;
+  }
+  goal = newGoal;
+  document.getElementById("goalDisplay").textContent = goal;
+
+  if(goal < 8){
+    alert("Warning: Recommended daily goal is 8 glasses for health.");
+  }
+
+  count = 0;
+  document.getElementById("count").textContent = count;
+  history = [];
+  updateHistory();
+}
+
+function updateHistory() {
+  let historyDiv = document.getElementById("historyList");
+  let today = new Date().toLocaleDateString();
+  let todayCount = history.filter(h => h.date === today).length;
+  historyDiv.innerHTML = `<p>${today}: ${todayCount} glasses</p>`;
+}
+
+function startReminder() {
+  let interval = Number(document.getElementById("reminderInterval").value);
+  if(interval < 1) {
+    alert("Please set at least 1 minute for reminder.");
+    return;
+  }
+
+  if(reminderTimer) clearInterval(reminderTimer);
+
+  reminderTimer = setInterval(() => {
+    alert("Time to drink water! 💧");
+  }, interval * 60 * 1000);
+
+  alert(`Reminder set every ${interval} minute(s).`);
+}
+
+function stopReminder() {
+  if(reminderTimer) {
+    clearInterval(reminderTimer);
+    reminderTimer = null;
+    alert("Reminder stopped.");
+  }
+}
+
+function endSession() {
+  if(count > 0){
+    let today = new Date().toLocaleDateString();
+    alert(`Session ended for ${today}. Total glasses: ${count}`);
+    history.push({ date: today, glasses: count });
+    updateHistory();
+    count = 0;
+    document.getElementById("count").textContent = count;
+    stopReminder();
+  } else {
+    alert("No water intake recorded for today.");
+  }
+}
+</script>
+
+</body>
+</html>
