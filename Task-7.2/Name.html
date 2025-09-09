@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Name</title>
+</head>
+<body>
+     <form onsubmit="return checkname()">
+
+            Name:   
+            <input type="text" name="name" value="" id="name" /> <br >
+                        <p id="NameInvalid" style="color: red;"></p>
+                <input type="submit" value="Submit"/>
+           
+                     
+     </form>
+<script>
+
+        function checkname() {
+            let name =document.getElementById("name").value;
+            let invalid =document.getElementById("NameInvalid");
+
+            if(name===""){
+                invalid.innerHTML="Enter Name. Can not be Empty!!!";
+                return false;
+
+            }
+
+            let words=name.split(" ");
+            let validwords = 0;
+            for(let w of words){
+                if(w!=="") validwords++;
+            }
+                if(validwords<2){
+                invalid.innerHTML="At least 2 words";
+                return false;
+                 }
+            
+
+            let firstChar = name[0];
+            if(!((firstChar>= 'A' && firstChar<='Z')||(firstChar>= 'a' && firstChar<='z'))){
+                invalid.innerHTML="Name must be start with a letter";
+                return false;
+            }
+
+            for(let i=0; i<name.length; i++){
+                let ch =name[i];
+                if(!((ch>='A'&& ch<='Z') || (ch>='a'&& ch<='z') || ch==='.' || ch==='-' ||ch===' ' )){
+                    invalid.innerHTML= "only letters, dot(.) and dash(-) allowed";
+                    return false;
+                }
+            }
+            
+            invalid.innerHTML="";
+            return true;
+
+        }
+
+</script>
+</body>
+</html>
