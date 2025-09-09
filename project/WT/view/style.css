@@ -1,0 +1,125 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background: #f5f5f5;
+}
+header {
+    background: #4CAF50;
+    color: white;
+    padding: 2rem;
+    text-align: center;
+}
+nav {
+    display: flex;
+    justify-content: center;
+    background: #333;
+}
+nav button {
+    flex: 1;
+    padding: 1rem;
+    border: none;
+    background: #333;
+    color: white;
+    cursor: pointer;
+}
+nav button:hover {
+    background: #555;
+}
+.navbar {
+    display: flex;
+    gap: 25px;
+    padding: 15px 80px;
+    background: rgba(0, 0, 0, 1);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+    backdrop-filter: blur(4px);
+}
+.navbar a {
+    color: #e0e0e0;
+    text-decoration: none;
+    font-weight: bold;
+    transition: 0.3s;
+}
+.navbar a:hover {
+    color: #a3d8ff;
+}
+.screen {
+    display: none;
+    padding: 1rem;
+}
+.active {
+    display: block;
+}
+.meal-list {
+    margin-top: 1rem;
+}
+.meal-item {
+    background: white;
+    margin: 5px 0;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.delete-btn {
+    background: red;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+canvas {
+    margin-top: 20px;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+input, button {
+    margin: 5px 5px 5px 0;
+    padding: 8px;
+}
+.legend {
+    margin-top: 10px;
+}
+.legend span {
+    display: inline-block;
+    margin-right: 15px;
+    cursor: pointer;
+}
+.color-box {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    margin-right: 5px;
+    vertical-align: middle;
+}
+.error-msg {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 2px;
+}
+.navbar {
+  background-color: #041517;
+  padding: 10px;
+  display: flex;
+  gap: 15px;
+}
+
+.navbar a {
+  background-color: #070202;
+  color: #f1f6f7;
+  padding: 8px 15px;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: bold;
+  transition: 0.3s;
+}
+.navbar a:hover {
+  background-color: #535f62;
+  color: #898080;
+}
